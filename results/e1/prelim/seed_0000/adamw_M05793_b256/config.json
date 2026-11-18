@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "seed": 0,
+    "M": 5793,
+    "opt": "adamw",
+    "batch": 256,
+    "steps": 20000,
+    "lr": 0.001,
+    "lr_aux": null,
+    "tuned": "reference",
+    "scale": "prelim",
+    "eval_every": 500,
+    "n_eval": 8192,
+    "ckpt_every": 5000,
+    "block_steps": 500,
+    "d": 8,
+    "k": 16,
+    "noise_std": 0.5,
+    "n_layer": 4,
+    "n_embd": 64,
+    "n_head": 2,
+    "sgd_momentum": 0.9,
+    "muon_momentum": 0.95
+  },
+  "settings_hash": "3cf1c0676741"
+}

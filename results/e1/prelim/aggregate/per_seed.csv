@@ -1,0 +1,3 @@
+seed,opt,n_runs,log2_Mstar,status,readout_log2_b256,readout_log2_b512
+0,adamw,18,9.671,ok,,
+0,muon,18,10.776,ok,,

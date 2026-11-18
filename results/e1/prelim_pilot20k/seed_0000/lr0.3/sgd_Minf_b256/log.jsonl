@@ -1,0 +1,12 @@
+{"step": 0, "lr": 0.0, "train_loss": null, "gap_ridge_new": 0.6572925448417664, "mse_model_new": 0.9977668523788452}
+{"step": 500, "lr": 0.015, "train_loss": 8.2503330078125, "gap_ridge_new": 0.6582130789756775, "mse_model_new": 0.9991081953048706}
+{"step": 1000, "lr": 0.03, "train_loss": 8.2413076171875, "gap_ridge_new": 0.6541157960891724, "mse_model_new": 0.9948713779449463}
+{"step": 1500, "lr": 0.045, "train_loss": 8.260705078125, "gap_ridge_new": 0.654205322265625, "mse_model_new": 0.9949749708175659}
+{"step": 2000, "lr": 0.06, "train_loss": 8.271373046875, "gap_ridge_new": 0.6540908813476562, "mse_model_new": 0.9948781132698059}
+{"step": 2500, "lr": 0.075, "train_loss": 8.2601259765625, "gap_ridge_new": 0.6541844010353088, "mse_model_new": 0.994970440864563}
+{"step": 3000, "lr": 0.09, "train_loss": 8.24990625, "gap_ridge_new": 0.6540710926055908, "mse_model_new": 0.9948378801345825}
+{"step": 3500, "lr": 0.105, "train_loss": 8.2609306640625, "gap_ridge_new": 0.6540876626968384, "mse_model_new": 0.9948534965515137}
+{"step": 4000, "lr": 0.12, "train_loss": 8.2491796875, "gap_ridge_new": 0.6540733575820923, "mse_model_new": 0.9948503971099854}
+{"step": 4500, "lr": 0.135, "train_loss": 8.225271484375, "gap_ridge_new": 0.6540886163711548, "mse_model_new": 0.9948809146881104}
+{"step": 5000, "lr": 0.15, "train_loss": 8.240380859375, "gap_ridge_new": 0.6541454195976257, "mse_model_new": 0.9948846697807312}
+{"step": 5500, "lr": 0.165, "train_loss": 8.2595576171875, "gap_ridge_new": 0.6540786623954773, "mse_model_new": 0.9948546886444092}

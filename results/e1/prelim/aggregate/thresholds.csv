@@ -1,0 +1,3 @@
+opt,n_seeds,n_seeds_paired,log2_Mstar,Mstar,status,all_crossings_log2,ci95_lo,ci95_hi,boot_bracketed_frac,readout_log2_b256,readout_log2_b512,tuned
+adamw,1,1,9.671,815,ok,9.671,,,,,,reference
+muon,1,1,10.776,1753,ok,10.776,,,,,,quick-sweep

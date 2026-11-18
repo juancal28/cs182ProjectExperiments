@@ -1,0 +1,11 @@
+# Python environment and caches
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Resume state for unfinished runs (finished runs keep model.pt and final.json)
+checkpoint.pt
+*.tmp
+
+# Third-party paper PDFs (67 MB); delete this line to track them
+papers/

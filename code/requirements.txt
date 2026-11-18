@@ -1,0 +1,4 @@
+# PyTorch is installed separately because the build depends on the machine (see README.md).
+numpy
+matplotlib
+pytest

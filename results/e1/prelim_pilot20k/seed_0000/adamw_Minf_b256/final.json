@@ -1,0 +1,21 @@
+{
+  "seed": 0,
+  "opt": "adamw",
+  "M": "inf",
+  "log2_M": "",
+  "batch": 256,
+  "lr": 0.001,
+  "lr_aux": "",
+  "tuned": "reference",
+  "steps": 20000,
+  "scale": "prelim",
+  "gap_ridge_new": 0.007905373349785805,
+  "mse_model_new": 0.3492630124092102,
+  "mse_ridge_new": 0.34131723642349243,
+  "t_mem": "",
+  "settings_hash": "3eab9b3c8498",
+  "git_commit": "b6fde9c",
+  "torch_version": "2.14.1+cu126",
+  "device": "NVIDIA GeForce RTX 4070 Ti",
+  "wall_seconds": 174.8
+}

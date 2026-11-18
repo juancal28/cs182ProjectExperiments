@@ -1,0 +1,5 @@
+{"step": 0, "lr": 0.0, "train_loss": null, "gap_ridge_new": 0.6572925448417664, "mse_model_new": 0.9977668523788452}
+{"step": 500, "lr": 0.05, "train_loss": 8.2503466796875, "gap_ridge_new": 0.6543480753898621, "mse_model_new": 0.9951438903808594}
+{"step": 1000, "lr": 0.1, "train_loss": 8.2406220703125, "gap_ridge_new": 0.6541399955749512, "mse_model_new": 0.9949482679367065}
+{"step": 1500, "lr": 0.15, "train_loss": 8.260673828125, "gap_ridge_new": 0.6541460752487183, "mse_model_new": 0.9949394464492798}
+{"step": 2000, "lr": 0.2, "train_loss": 8.272123046875, "gap_ridge_new": 0.6540762782096863, "mse_model_new": 0.9948599338531494}

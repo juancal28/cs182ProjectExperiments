@@ -1,0 +1,4 @@
+seed,opt,n_runs,log2_Mstar,status,readout_log2_b256,readout_log2_b512
+7,adamw,4,,not_bracketed,,
+7,muon,4,,not_bracketed,,
+7,sgd,4,,not_bracketed,,
