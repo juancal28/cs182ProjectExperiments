@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "seed": 42,
+    "M": 8192,
+    "opt": "muon",
+    "batch": 256,
+    "steps": 500000,
+    "lr": 0.005,
+    "lr_aux": 0.001,
+    "tuned": "quick-sweep",
+    "scale": "full",
+    "eval_every": 1000,
+    "n_eval": 8192,
+    "ckpt_every": 10000,
+    "block_steps": 500,
+    "d": 8,
+    "k": 16,
+    "noise_std": 0.5,
+    "n_layer": 4,
+    "n_embd": 64,
+    "n_head": 2,
+    "sgd_momentum": 0.9,
+    "muon_momentum": 0.95
+  },
+  "settings_hash": "9aef72a54762"
+}
