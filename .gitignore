@@ -9,3 +9,6 @@ checkpoint.pt
 
 # Third-party paper PDFs (67 MB); delete this line to track them
 papers/
+
+# Weights & Biases local run files
+wandb/

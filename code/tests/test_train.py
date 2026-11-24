@@ -3,7 +3,7 @@ import json
 import pytest
 import torch
 
-from e1.config import Settings, make_settings, run_name, settings_hash
+from e1.config import MAX_POOL, Settings, grid, make_settings, run_name, settings_hash
 from e1.train import run_one
 
 
@@ -105,3 +105,12 @@ def test_make_settings_marks_overrides():
     assert make_settings(0, 512, "sgd", 256).tuned == "untuned"
     assert make_settings(0, 512, "sgd", 256, lr=0.05).tuned == "override"
     assert make_settings(0, 512, "adamw", 256, "prelim").steps == 20_000
+
+
+def test_grid_default_and_chosen_pool_sizes():
+    assert len(grid(0)) == 54 and len(grid(0, "smoke")) == 12
+    runs = grid(3, "prelim", opts=["adamw"], Ms=[3000, None, 600, 3000])
+    assert [(s.M, s.batch) for s in runs] == [(600, 256), (600, 512), (3000, 256), (3000, 512), (None, 256), (None, 512)]
+    assert all(s.seed == 3 and s.steps == 20_000 for s in runs)
+    with pytest.raises(ValueError, match="M must be in"):
+        grid(0, Ms=[MAX_POOL + 1])

@@ -21,7 +21,7 @@ from pathlib import Path
 
 import numpy as np
 
-from e1.config import GRID_BATCH, GRID_M, GRID_OPT
+from e1.config import GRID_BATCH, GRID_OPT
 
 NUMERIC = ["seed", "M", "batch", "steps", "gap_ridge_new", "gap_dmmse_new", "gap_ridge_seen", "gap_dmmse_seen"]
 
@@ -112,11 +112,15 @@ def bootstrap_interval(by_seed: dict, direction: str, n_boot: int = 2000, rng_se
 
 
 def missing_cells(rows) -> list[str]:
+    """Cells absent for some seed, optimizer or batch size, over the pool sizes that appear in any table.
+
+    The pool sizes are read from the tables, not from the default grid, because a seed may be run with others.
+    """
     have = {(r["seed"], r["opt"], r["M"], r["batch"]) for r in rows}
     out = []
     for seed in sorted({r["seed"] for r in rows}):
         for opt in GRID_OPT:
-            for m in GRID_M:
+            for m in sorted({r["M"] for r in rows}):
                 for b in GRID_BATCH:
                     if (seed, opt, m, b) not in have:
                         out.append(f"seed {seed} {opt} M={m} batch={b}")

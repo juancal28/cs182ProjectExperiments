@@ -33,6 +33,11 @@ SCALES = {
 }
 SMOKE_M = [512, 32768]
 
+# Weights & Biases destination, shared by everyone so all seeds land in one place.
+# WANDB_ENTITY is the team's W&B entity (the name in wandb.ai/<entity>); set it once here.
+WANDB_ENTITY = None
+WANDB_PROJECT = "cs182-icl-optimizers"
+
 
 @dataclasses.dataclass(frozen=True)
 class Settings:
@@ -96,15 +101,20 @@ def make_settings(seed: int, M: Optional[int], opt: str, batch: int, scale: str 
 
 
 def grid(seed: int, scale: str = "full", opts=None, batches=None, Ms=None, **overrides) -> list[Settings]:
-    """The E1 grid for one seed, in run order: optimizer, then M, then batch size."""
-    default_m = SMOKE_M if scale == "smoke" else GRID_M
+    """The E1 grid for one seed, in run order: optimizer, then M, then batch size.
+
+    `Ms` replaces the default pool sizes with any others (None is a fresh task per sequence);
+    they are run in increasing order, fresh tasks last.
+    """
+    if Ms:
+        pool_sizes = sorted({m for m in Ms if m is not None}) + ([None] if None in Ms else [])
+    else:
+        pool_sizes = SMOKE_M if scale == "smoke" else GRID_M
     out = []
     for opt in GRID_OPT:
         if opts and opt not in opts:
             continue
-        for M in default_m:
-            if Ms and M not in Ms:
-                continue
+        for M in pool_sizes:
             for batch in GRID_BATCH:
                 if batches and batch not in batches:
                     continue

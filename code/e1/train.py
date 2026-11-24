@@ -11,7 +11,7 @@ os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")   # deterministic cu
 
 import torch
 
-from e1 import data
+from e1 import data, tracking
 from e1.baselines import dmmse_preds, ridge_preds
 from e1.config import Settings, run_name, settings_hash
 from e1.model import ICLTransformer, init_weights
@@ -88,11 +88,13 @@ def first_memorized_step(records: list) -> Optional[int]:
     return None
 
 
-def run_one(s: Settings, out_root, device=None, stop_after: Optional[int] = None, verbose: bool = True):
+def run_one(s: Settings, out_root, device=None, stop_after: Optional[int] = None, verbose: bool = True,
+            wandb_target: Optional[tracking.WandbTarget] = None):
     """Train one run, resuming from its checkpoint if there is one.
 
     Returns the summary dict, or None if `stop_after` interrupted it. Results live in
-    out_root / run_name(s). A finished run is never retrained.
+    out_root / run_name(s). A finished run is never retrained. With `wandb_target`, every
+    log record also goes to Weights & Biases.
     """
     torch.use_deterministic_algorithms(True, warn_only=True)
     device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
@@ -136,67 +138,72 @@ def run_one(s: Settings, out_root, device=None, stop_after: Optional[int] = None
         records = [{"step": 0, "lr": 0.0, "train_loss": None, **evals.evaluate(model)}]
     _atomic_write_text(log_path, "".join(json.dumps(r) + "\n" for r in records))
 
-    t0 = time.time()
-    loss_sum, loss_n = torch.zeros((), device=device), 0
-    bx = by = None
-    for step in range(start, s.steps):
-        j = step % s.block_steps
-        if j == 0 or bx is None:
-            xs, u, noise, w = data.train_block(s.seed, s.batch, step // s.block_steps, s.block_steps,
-                                               fresh_tasks=s.M is None)
-            bx, noise = xs.to(device), noise.to(device)
-            w = w.to(device) if s.M is None else pool_dev[data.pick_index(u, s.M).to(device)]
-            by = data.targets(bx, w, noise)
-        loss = ((model(bx[j], by[j]) - by[j]) ** 2).mean()
-        for o in opts:
-            o.zero_grad(set_to_none=True)
-        loss.backward()
-        for o in opts:
-            o.step()
-        for sc in scheds:
-            sc.step()
-        loss_sum += loss.detach()
-        loss_n += 1
-        done = step + 1
+    with tracking.start(s, wandb_target, quiet=not verbose) as tracker:
+        for r in records:
+            tracker.log(r)
+        t0 = time.time()
+        loss_sum, loss_n = torch.zeros((), device=device), 0
+        bx = by = None
+        for step in range(start, s.steps):
+            j = step % s.block_steps
+            if j == 0 or bx is None:
+                xs, u, noise, w = data.train_block(s.seed, s.batch, step // s.block_steps, s.block_steps,
+                                                   fresh_tasks=s.M is None)
+                bx, noise = xs.to(device), noise.to(device)
+                w = w.to(device) if s.M is None else pool_dev[data.pick_index(u, s.M).to(device)]
+                by = data.targets(bx, w, noise)
+            loss = ((model(bx[j], by[j]) - by[j]) ** 2).mean()
+            for o in opts:
+                o.zero_grad(set_to_none=True)
+            loss.backward()
+            for o in opts:
+                o.step()
+            for sc in scheds:
+                sc.step()
+            loss_sum += loss.detach()
+            loss_n += 1
+            done = step + 1
 
-        if done % s.eval_every == 0 or done == s.steps:
-            rec = {"step": done, "lr": opts[0].param_groups[0]["lr"],
-                   "train_loss": loss_sum.item() / loss_n, **evals.evaluate(model)}
-            if not math.isfinite(rec["train_loss"]):
-                raise FloatingPointError(f"{run_name(s)}: training loss is not finite at step {done}")
-            records.append(rec)
-            with open(log_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(rec) + "\n")
-            loss_sum.zero_()
-            loss_n = 0
-            if verbose:
-                rate = (done - start) / max(time.time() - t0, 1e-9)
-                print(f"[{run_name(s)}] step {done:>7}/{s.steps}  loss {rec['train_loss']:.4f}  "
-                      f"gap_ridge_new {rec['gap_ridge_new']:.4f}  {rate:.0f} steps/s", flush=True)
-        if done % s.ckpt_every == 0 and done < s.steps:
-            _atomic_torch_save({"settings_hash": h, "step": done, "records": records,
-                                "elapsed": elapsed + time.time() - t0,
-                                "model": model.state_dict(),
-                                "opts": [o.state_dict() for o in opts],
-                                "scheds": [sc.state_dict() for sc in scheds]}, ckpt_path)
-        if stop_after is not None and done >= stop_after and done < s.steps:
-            return None
+            if done % s.eval_every == 0 or done == s.steps:
+                rec = {"step": done, "lr": opts[0].param_groups[0]["lr"],
+                       "train_loss": loss_sum.item() / loss_n, **evals.evaluate(model)}
+                if not math.isfinite(rec["train_loss"]):
+                    raise FloatingPointError(f"{run_name(s)}: training loss is not finite at step {done}")
+                records.append(rec)
+                with open(log_path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(rec) + "\n")
+                tracker.log(rec)
+                loss_sum.zero_()
+                loss_n = 0
+                if verbose:
+                    rate = (done - start) / max(time.time() - t0, 1e-9)
+                    print(f"[{run_name(s)}] step {done:>7}/{s.steps}  loss {rec['train_loss']:.4f}  "
+                          f"gap_ridge_new {rec['gap_ridge_new']:.4f}  {rate:.0f} steps/s", flush=True)
+            if done % s.ckpt_every == 0 and done < s.steps:
+                _atomic_torch_save({"settings_hash": h, "step": done, "records": records,
+                                    "elapsed": elapsed + time.time() - t0,
+                                    "model": model.state_dict(),
+                                    "opts": [o.state_dict() for o in opts],
+                                    "scheds": [sc.state_dict() for sc in scheds]}, ckpt_path)
+            if stop_after is not None and done >= stop_after and done < s.steps:
+                return None
 
-    _atomic_torch_save(model.state_dict(), out_dir / "model.pt")
-    last = records[-1]
-    summary = {
-        "seed": s.seed, "opt": s.opt, "M": "inf" if s.M is None else s.M,
-        "log2_M": "" if s.M is None else round(math.log2(s.M), 4),
-        "batch": s.batch, "lr": s.lr, "lr_aux": "" if s.lr_aux is None else s.lr_aux,
-        "tuned": s.tuned, "steps": s.steps, "scale": s.scale,
-        **{k: v for k, v in last.items() if k.startswith(("gap_", "mse_"))},
-        **evals.baseline_errors(),
-        "t_mem": first_memorized_step(records) or "",
-        "settings_hash": h, "git_commit": _git_commit(), "torch_version": torch.__version__,
-        "device": torch.cuda.get_device_name(device) if device.type == "cuda" else "cpu",
-        "wall_seconds": round(elapsed + time.time() - t0, 1),
-    }
-    _atomic_write_text(final_path, json.dumps(summary, indent=2))
-    if ckpt_path.exists():
-        ckpt_path.unlink()
+        _atomic_torch_save(model.state_dict(), out_dir / "model.pt")
+        last = records[-1]
+        summary = {
+            "seed": s.seed, "opt": s.opt, "M": "inf" if s.M is None else s.M,
+            "log2_M": "" if s.M is None else round(math.log2(s.M), 4),
+            "batch": s.batch, "lr": s.lr, "lr_aux": "" if s.lr_aux is None else s.lr_aux,
+            "tuned": s.tuned, "steps": s.steps, "scale": s.scale,
+            **{k: v for k, v in last.items() if k.startswith(("gap_", "mse_"))},
+            **evals.baseline_errors(),
+            "t_mem": first_memorized_step(records) or "",
+            "settings_hash": h, "git_commit": _git_commit(), "torch_version": torch.__version__,
+            "device": torch.cuda.get_device_name(device) if device.type == "cuda" else "cpu",
+            "wall_seconds": round(elapsed + time.time() - t0, 1),
+        }
+        _atomic_write_text(final_path, json.dumps(summary, indent=2))
+        if ckpt_path.exists():
+            ckpt_path.unlink()
+        tracker.summarize(summary)
     return summary

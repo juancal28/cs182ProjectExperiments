@@ -10,14 +10,29 @@ Run everything from this folder (`project/code`).
 python -m e1.run_seed --seed 7                 # the full grid: 54 runs of 500,000 steps
 python -m e1.run_seed --seed 7 --scale prelim  # same grid, 20,000 steps per run (about 3.5 hours on an RTX 4070 Ti)
 python -m e1.run_seed --seed 7 --scale smoke   # 12 tiny runs; checks the whole pipeline in minutes
-python -m e1.run_seed --seed 7 --opt adamw     # filters: --opt, --batch, --M
+python -m e1.run_seed --seed 0 1 2 3           # several seeds, one after the other
+python -m e1.run_seed --seed 7 --M 600 3000    # your own pool sizes instead of the default nine
+python -m e1.run_seed --seed 7 --opt adamw     # filters: --opt, --batch
 python -m e1.aggregate ../results/e1/full      # M* per optimizer from every seed found there
 python -m pytest tests -q                      # the test suite (CPU, about a minute)
 ```
 
+- **Seeds:** `--seed` takes one or more seeds. Each seed gets its own folder and `summary.csv`, and finishes before the next one starts.
+- **Pool sizes:** `--M` takes any pool sizes from 1 to 32,768, or `inf` for a fresh task per sequence. Without it the default grid runs. Runs with other pool sizes go into the same seed folder as the default ones, and the aggregator uses whatever pool sizes it finds.
 - **Stopping and resuming:** stop it any time; the same command continues from the last checkpoint and skips finished runs.
 - **Results:** `../results/e1/<scale>/seed_<NNNN>/summary.csv` is the table to share (one row per run). Each run folder also holds `log.jsonl` (metrics through training), `config.json` and the final weights.
 - **One run with overrides** (for a learning-rate pilot or a fresh-task run): `python -m e1.run_one --seed 7 --M inf --opt sgd --lr 0.03 --steps 20000 --tag pilot`.
+
+## Weights & Biases
+
+Every run at `full` or `prelim` scale logs to one W&B entity and project, so all seeds from all machines land in the same place. Smoke runs do not log unless `--wandb` is given.
+
+- **One-time setup:** set `WANDB_ENTITY` in `e1/config.py` to the team's entity (the name in `wandb.ai/<entity>`) and commit it. Each person then runs `wandb login` once per machine. Until the entity is set, `full` and `prelim` commands stop before training and say so.
+- **Switches:** `--no-wandb` trains without logging; `--wandb-entity` and `--wandb-project` override the values in `e1/config.py`.
+- **What is logged:** every line of `log.jsonl` (plotted against the training step), the run's settings and settings hash, and the final summary values. Runs are grouped by seed folder (for example `prelim/seed_0007`) and tagged with scale, optimizer and learning-rate status.
+- **Resuming:** the W&B run id comes from the settings hash, so a stopped and continued training run keeps logging to the same W&B run.
+- **No network:** set `WANDB_MODE=offline` and upload later with `wandb sync`.
+- Logging is not part of a run's settings, so it changes neither the settings hash nor the numbers. The files under `results/` stay the source of truth.
 
 ## What the seed controls
 

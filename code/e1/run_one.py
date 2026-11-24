@@ -6,6 +6,7 @@
 import argparse
 from pathlib import Path
 
+from e1 import tracking
 from e1.config import make_settings
 from e1.train import run_one
 
@@ -33,6 +34,7 @@ def main(argv=None):
     p.add_argument("--tag", default="", help="suffix for the output folder, so overrides never mix with grid runs")
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--device", default=None)
+    tracking.add_arguments(p)
     a = p.parse_args(argv)
     if (a.steps or a.lr or a.lr_aux) and not a.tag:
         p.error("--steps/--lr/--lr-aux change the experiment; give --tag so results go to their own folder")
@@ -40,7 +42,11 @@ def main(argv=None):
     out = seed_dir(a.out, a.scale, a.seed, a.tag)
     if a.lr or a.lr_aux:   # several learning rates of the same cell must not share a folder
         out = out / (f"lr{s.lr:g}" + (f"_aux{s.lr_aux:g}" if s.lr_aux else ""))
-    summary = run_one(s, out, a.device)
+    try:
+        target = tracking.resolve(a.wandb, a.scale, a.wandb_entity, a.wandb_project, a.tag)
+    except RuntimeError as e:
+        p.error(str(e))
+    summary = run_one(s, out, a.device, wandb_target=target)
     print({k: summary[k] for k in summary if k.startswith(("gap_", "mse_", "t_mem", "wall"))})
 
 
