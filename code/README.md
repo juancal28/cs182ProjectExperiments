@@ -14,6 +14,9 @@ python -m e1.run_seed --seed 0 1 2 3           # several seeds, one after the ot
 python -m e1.run_seed --seed 7 --M 600 3000    # your own pool sizes instead of the default nine
 python -m e1.run_seed --seed 7 --opt adamw     # filters: --opt, --batch
 python -m e1.aggregate ../results/e1/full      # M* per optimizer from every seed found there
+python -m e1.mstar_figures ../results/e1/full  # three more figures that read the runs against M*
+python -m e1.probes ../results/e1/full         # off-distribution probes on the saved weights (evaluation only)
+python -m e1.paper ../results/e1/full ../paper # numbers, tables and figures for the draft in ../paper
 python -m pytest tests -q                      # the test suite (CPU, about a minute)
 ```
 

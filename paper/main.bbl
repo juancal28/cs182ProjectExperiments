@@ -1,0 +1,81 @@
+\begin{thebibliography}{11}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Garg et~al.(2022)Garg, Tsipras, Liang, and Valiant]{garg2022}
+Shivam Garg, Dimitris Tsipras, Percy Liang, and Gregory Valiant.
+\newblock What can transformers learn in-context? {A} case study of simple
+  function classes.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2022.
+
+\bibitem[Ravent{\'o}s et~al.(2023)Ravent{\'o}s, Paul, Chen, and
+  Ganguli]{raventos2023}
+Allan Ravent{\'o}s, Mansheej Paul, Feng Chen, and Surya Ganguli.
+\newblock Pretraining task diversity and the emergence of non-{B}ayesian
+  in-context learning for regression.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2023.
+
+\bibitem[Nguyen and Reddy(2025)]{nguyen2025}
+Alex Nguyen and Gautam Reddy.
+\newblock Differential learning kinetics govern the transition from
+  memorization to generalization during in-context learning.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2025.
+
+\bibitem[Carroll et~al.(2025)Carroll, Hoogland, Farrugia-Roberts, and
+  Murfet]{carroll2025}
+Liam Carroll, Jesse Hoogland, Matthew Farrugia-Roberts, and Daniel Murfet.
+\newblock Dynamics of transient structure in in-context linear regression
+  transformers.
+\newblock \emph{arXiv preprint arXiv:2501.17745}, 2025.
+
+\bibitem[Wurgaft et~al.(2025)Wurgaft, Lubana, Park, Tanaka, Reddy, and
+  Goodman]{wurgaft2025}
+Daniel Wurgaft, Ekdeep~Singh Lubana, Core~Francisco Park, Hidenori Tanaka,
+  Gautam Reddy, and Noah~D. Goodman.
+\newblock In-context learning strategies emerge rationally.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2025.
+
+\bibitem[Jordan et~al.(2024)Jordan, Jin, Boza, You, Cesista, Newhouse, and
+  Bernstein]{jordan2024}
+Keller Jordan, Yuchen Jin, Vlado Boza, Jiacheng You, Franz Cesista, Laker
+  Newhouse, and Jeremy Bernstein.
+\newblock Muon: An optimizer for hidden layers in neural networks.
+\newblock Blog post, \url{https://kellerjordan.github.io/posts/muon/}, 2024.
+
+\bibitem[Dragutinovi{\'c} et~al.(2026)Dragutinovi{\'c}, Zhang, and
+  Ranganath]{dragutinovic2026}
+Sara Dragutinovi{\'c}, Yedi Zhang, and Rajesh Ranganath.
+\newblock To use or not to use {M}uon: How simplicity bias in optimizers
+  matters.
+\newblock \emph{arXiv preprint arXiv:2603.00742}, 2026.
+
+\bibitem[Liu et~al.(2026)Liu, Wang, and Zhang]{liu2026}
+Yuxing Liu, Jianyu Wang, and Tong Zhang.
+\newblock Optimizer-model consistency: Full finetuning with the same optimizer
+  as pretraining forgets less.
+\newblock \emph{arXiv preprint arXiv:2605.06654}, 2026.
+
+\bibitem[Ruan et~al.(2026)Ruan, Zhang, Wang, and Zhang]{ruan2026}
+Tianyu Ruan, Fengzhuo Zhang, Shuche Wang, and Shihua Zhang.
+\newblock Muon learns more robust and transferable features than {A}dam.
+\newblock \emph{arXiv preprint arXiv:2606.09658}, 2026.
+
+\bibitem[Chen et~al.(2026)Chen, Li, and Liu]{chen2026}
+Lizhang Chen, Jonathan Li, and Qiang Liu.
+\newblock Muon optimizes under spectral norm constraints.
+\newblock \emph{Transactions on Machine Learning Research (TMLR)}, 2026.
+
+\bibitem[Wen et~al.(2026)Wen, Hall, Ma, and Liang]{wen2026}
+Kaiyue Wen, David Hall, Tengyu Ma, and Percy Liang.
+\newblock Fantastic pretraining optimizers and where to find them.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2026.
+
+\end{thebibliography}
