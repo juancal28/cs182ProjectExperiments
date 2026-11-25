@@ -1,0 +1,7 @@
+seed,opt,n_runs,log2_Mstar,status,readout_log2_b256,readout_log2_b512
+42,adamw,18,11.751,ok,,
+755,adamw,18,11.393,ok,,
+42,muon,18,11.923,ok,,
+755,muon,18,14.518,ok,,
+42,sgd,18,11.499,ok,,
+755,sgd,18,10.716,multiple,,
